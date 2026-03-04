@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Products - Priya E-Commerce</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <h2>Priya E-Commerce</h2>
+  <div class="nav-right">
+    <input type="text" id="searchInput" placeholder="Search products..." oninput="searchProducts()">
+    <a href="/cart.html">Cart</a>
+    <a href="/home.html">Home</a>
+  </div>
+</div>
+
+<div class="container">
+  <h2>Our Products</h2>
+  <div class="products" id="productList"></div>
+</div>
+
+<script src="/js/script.js"></script>
+<script>
+async function loadProducts(){
+  const res = await fetch("/products");
+  const products = await res.json();
+  displayProducts(products);
+}
+
+function displayProducts(products){
+  const container = document.getElementById("productList");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    let priceHTML = p.isOnSale ? 
+      `<span class="old-price">₹${p.price}</span>
+       <span class="price">₹${p.price - (p.price*p.discountPercent/100)}</span>` :
+      `<span class="price">₹${p.price}</span>`;
+
+    container.innerHTML += `
+      <div class="card">
+        ${p.isOnSale ? `<div class="badge">${p.discountPercent}% OFF</div>` : ""}
+        <img src="${p.image || '/images/default.png'}" alt="${p.name}" style="width:100%; border-radius:8px;">
+        <h3>${p.name}</h3>
+        <p>${p.description}</p>
+        ${priceHTML}
+        <button class="btn" onclick="addToCart('${p._id}')">Add to Cart</button>
+      </div>
+    `;
+  });
+}
+
+function searchProducts(){
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const cards = document.querySelectorAll(".products .card");
+  cards.forEach(card => {
+    const name = card.querySelector("h3").innerText.toLowerCase();
+    card.style.display = name.includes(input) ? "block" : "none";
+  });
+}
+
+loadProducts();
+</script>
+</body>
+</html>

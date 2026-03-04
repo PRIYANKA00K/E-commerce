@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart - Priya E-Commerce</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <h2>Priya E-Commerce</h2>
+  <div>
+    <a href="/home.html">Home</a>
+    <a href="/product.html">Products</a>
+  </div>
+</div>
+
+<div class="container">
+  <h2>Your Cart</h2>
+  <div id="cartItems"></div>
+  <h3 id="totalAmount"></h3>
+  <a href="/checkout.html"><button class="btn btn-success">Checkout</button></a>
+</div>
+
+<script src="/js/script.js"></script>
+<script>
+async function loadCart(){
+  try {
+    const res = await fetch("/cart", { credentials: "include" });
+    if(!res.ok){ alert("Login first!"); window.location.href="/login.html"; return; }
+    const data = await res.json();
+
+    const container = document.getElementById("cartItems");
+    container.innerHTML = "";
+    let total = 0;
+
+    data.items.forEach(item => {
+      let price = item.price;
+      if(item.isOnSale){
+        price = price - (price * item.discountPercent / 100);
+      }
+      total += price * item.quantity;
+
+      container.innerHTML += `
+        <div class="cart-item">
+          ${item.productName} - ₹${price} x ${item.quantity}
+        </div>
+      `;
+    });
+
+    document.getElementById("totalAmount").innerText = `Total: ₹${total}`;
+  } catch (err) {
+    console.error("Cart load failed", err);
+  }
+}
+
+window.onload = loadCart;
+</script>
+</body>
+</html>

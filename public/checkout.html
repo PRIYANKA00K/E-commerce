@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout - Priya E-Commerce</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Checkout</h2>
+  <select id="paymentMode">
+    <option>Cash on Delivery</option>
+    <option>UPI</option>
+    <option>Card</option>
+    <option>Net Banking</option>
+  </select>
+  <button class="btn btn-success" onclick="checkout()">Place Order</button>
+</div>
+
+<script>
+async function checkout(){
+  const paymentMode = document.getElementById("paymentMode").value;
+  const res = await fetch("/checkout", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    credentials:"include",
+    body: JSON.stringify({ paymentMode })
+  });
+
+  if(res.ok){ alert("Order Placed Successfully!"); window.location.href="/home.html"; }
+  else alert("Checkout failed");
+}
+</script>
+
+</body>
+</html>
